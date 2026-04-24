@@ -155,7 +155,7 @@
   <div class="header">
     <div class="header-brand">
       <div class="brand-dot"></div>
-      <div class="brand-name">Dr. Soriano, Aldo Emanuel · Neurología Clínica</div>
+      <div class="brand-name">Dr. Soriano · Neurología</div>
     </div>
     <h1 id="page-title"><em>Diario</em> de migraña</h1>
     <div class="header-sub" id="page-sub">Registro personal de episodios</div>
@@ -279,12 +279,26 @@
   </div>
 </div>
 
+<!-- MODAL NOMBRE PACIENTE -->
+<div class="overlay" id="name-overlay">
+  <div class="modal" style="padding-bottom:28px">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="margin-bottom:6px">¿Tu nombre completo?</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px;font-weight:300;line-height:1.5">Aparecerá en el informe para identificar el documento.</p>
+    <label>Nombre y apellido</label>
+    <input type="text" id="patient-name" placeholder="Ej: María González" style="margin-bottom:16px"
+      onkeydown="if(event.key==='Enter')confirmExport()" />
+    <button class="btn btn-primary" onclick="confirmExport()" style="margin-top:0">Generar informe</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('name-overlay').classList.remove('show')" style="margin-top:8px">Cancelar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
 const KEY = "migrana_v3";
 const TRIGGERS  = ["Estrés","Falta de sueño","Alcohol","Cafeína","Luz intensa","Ruido","Ayuno","Menstruación","Clima","Pantallas","Perfumes","Ejercicio"];
-const SYMPTOMS  = ["Náuseas","Aura visual","Fotosensibilidad","Sonofobia","Vómitos","Mareos","Cuello rígido","Hormigueo"];
+const SYMPTOMS  = ["Náuseas","Aura visual","Fotosensibilidad","Fonofobia","Vómitos","Mareos","Cuello rígido","Hormigueo"];
 const MEDS      = ["Ibuprofeno","Paracetamol","Sumatriptán","Ergotamina","Naproxeno","Otro"];
 const LOCATIONS = ["A — Un lado","B — Toda la cabeza","C — Parte de atrás","D — En el ojo","Otra..."];
 
@@ -511,6 +525,23 @@ function renderStats(){
 
 function exportPDF(){
   if(!episodes.length){alert("No hay episodios para exportar");return;}
+  // Prefill saved name if exists
+  const saved=localStorage.getItem("migrana_patient_name")||"";
+  document.getElementById("patient-name").value=saved;
+  document.getElementById("name-overlay").classList.add("show");
+  setTimeout(()=>document.getElementById("patient-name").focus(),300);
+}
+
+function confirmExport(){
+  const name=document.getElementById("patient-name").value.trim();
+  if(!name){document.getElementById("patient-name").focus();return;}
+  localStorage.setItem("migrana_patient_name",name);
+  document.getElementById("name-overlay").classList.remove("show");
+  generatePDF(name);
+}
+
+function generatePDF(patientName){
+  if(!episodes.length){alert("No hay episodios para exportar");return;}
   const avg=(episodes.reduce((s,e)=>s+e.intensity,0)/episodes.length).toFixed(1);
   const avgDur=(episodes.reduce((s,e)=>s+e.duration,0)/episodes.length).toFixed(1);
   const maxInt=Math.max(...episodes.map(e=>e.intensity));
@@ -584,9 +615,13 @@ function exportPDF(){
         <div class="h-sub">${episodes.length} episodios registrados<br>Período: ${fmtDate(episodes[episodes.length-1].date)} — ${fmtDate(episodes[0].date)}</div>
       </div>
       <div class="h-right">
-        <div class="doc-name">Dr. Aldo Emanuel Soriano</div>
-        <div class="doc-spec">Neurología Clínica<br>Medicina General y Familiar</div>
-        <div class="doc-date">Generado el ${now}</div>
+        <div style="font-size:10px;color:#6B859E;text-transform:uppercase;letter-spacing:0.5px;font-weight:500;margin-bottom:3px">Paciente</div>
+        <div class="doc-name" style="font-size:17px">${patientName}</div>
+        <div style="margin-top:14px">
+          <div class="doc-name">Dr. Aldo Emanuel Soriano</div>
+          <div class="doc-spec">Neurología Clínica<br>Medicina General y Familiar</div>
+          <div class="doc-date">Generado el ${now}</div>
+        </div>
       </div>
     </div>
     <div class="summary">
