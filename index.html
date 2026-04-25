@@ -516,7 +516,7 @@ function renderStats(){
       ${topTriggers[0]?`<div class="insight"><div class="insight-icon">⚡</div>
         <div class="insight-text">Tu desencadenante más frecuente es <strong>${topTriggers[0][0]}</strong>, presente en ${topTriggers[0][1]} de ${episodes.length} episodios.</div></div>`:""}
       <div class="insight"><div class="insight-icon">📊</div>
-        <div class="insight-text">Intensidad promedio: <strong>${avg}/10</strong>. ${+avg>7?"Se recomienda consultar al médico sobre tratamiento preventivo.":"Dentro de un rango manejable."}</div></div>
+        <div class="insight-text">Intensidad promedio: <strong>${avg}/10</strong>.</div></div>
       ${thisMonth>0?`<div class="insight"><div class="insight-icon">📅</div>
         <div class="insight-text">Este mes llevás <strong>${thisMonth} episodio${thisMonth!==1?"s":""}</strong> registrado${thisMonth!==1?"s":""}.</div></div>`:""}
     </div>
