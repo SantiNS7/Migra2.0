@@ -513,9 +513,15 @@ function renderStats(){
     </div>`:""}
     <div class="card">
       <div class="card-title">Observaciones</div>
-      ${topTriggers[0]?`<div class="insight"><div class="insight-icon">⚡</div>
-        <div class="insight-text">Tu desencadenante más frecuente es <strong>${topTriggers[0][0]}</strong>, presente en ${topTriggers[0][1]} de ${episodes.length} episodios.</div></div>`:""}
-      <div class="insight"><div class="insight-icon">📊</div>
+      ${(()=>{
+        if(!topTriggers.length) return "";
+        const maxCount=topTriggers[0][1];
+        const topCount=topTriggers.filter(([,c])=>c===maxCount).length;
+        if(maxCount===1||topCount>1) return `<div class="insight"><div class="insight-icon">⚡</div>
+          <div class="insight-text">Los desencadenantes son <strong>variados</strong>, sin uno predominante por el momento.</div></div>`;
+        return `<div class="insight"><div class="insight-icon">⚡</div>
+          <div class="insight-text">Tu desencadenante más frecuente es <strong>${topTriggers[0][0]}</strong>, presente en ${maxCount} de ${episodes.length} episodios.</div></div>`;
+      })()}      <div class="insight"><div class="insight-icon">📊</div>
         <div class="insight-text">Intensidad promedio: <strong>${avg}/10</strong>.</div></div>
       ${thisMonth>0?`<div class="insight"><div class="insight-icon">📅</div>
         <div class="insight-text">Este mes llevás <strong>${thisMonth} episodio${thisMonth!==1?"s":""}</strong> registrado${thisMonth!==1?"s":""}.</div></div>`:""}
